@@ -163,13 +163,28 @@ enum BucketEntryType
     LIVEENTRY = 0, // Before protocol 11: created-or-updated;
                    // At-and-after protocol 11: only updated.
     DEADENTRY = 1,
-    INITENTRY = 2 // At-and-after protocol 11: only created.
+    INITENTRY = 2, // At-and-after protocol 11: only created.
+    RENTENTRY = 3
 };
 
 struct BucketMetadata
 {
     // Indicates the protocol version used to create / merge this bucket.
     uint32 ledgerVersion;
+
+    // reserved for future use
+    union switch (int v)
+    {
+    case 0:
+        void;
+    }
+    ext;
+};
+
+struct RentEntry
+{
+    LedgerKey key;
+    int64 rentBump;
 
     // reserved for future use
     union switch (int v)
@@ -190,6 +205,8 @@ case DEADENTRY:
     LedgerKey deadEntry;
 case METAENTRY:
     BucketMetadata metaEntry;
+case RENTENTRY:
+    RentEntry rentEntry;
 };
 
 enum TxSetComponentType

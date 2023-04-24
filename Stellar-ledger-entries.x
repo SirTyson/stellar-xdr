@@ -493,10 +493,21 @@ struct LiquidityPoolEntry
     body;
 };
 
+enum ContractDataType
+{
+    RECOVERABLE = 0
+};
+
 struct ContractDataEntry {
     Hash contractID;
     SCVal key;
     SCVal val;
+    union switch (ContractDataType t)
+    {
+    case RECOVERABLE:
+        int64 rentBalance;
+    }
+    meta;
 };
 
 struct ContractCodeEntry {
@@ -504,6 +515,7 @@ struct ContractCodeEntry {
 
     Hash hash;
     opaque code<SCVAL_LIMIT>;
+    int64 rentBalance;
 };
 
 
