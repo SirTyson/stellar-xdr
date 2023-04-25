@@ -11,9 +11,11 @@ struct ConfigSettingContractComputeV0
     // Cost of 10000 instructions
     int64 feeRatePerInstructionsIncrement;
 
-    // Memory limit per transaction. Unlike instructions, there is no fee
-    // for memory, just the limit.
-    uint32 txMemoryLimit;
+    // Memory limit per contract/host function invocation. Unlike
+    // instructions, there is no fee for memory and it's not
+    // accumulated between operations - the same limit is applied
+    // to every operation.
+    uint32 memoryLimit;
 };
 
 // Ledger access settings for contracts.
@@ -40,7 +42,7 @@ struct ConfigSettingContractLedgerCostV0
     int64 feeReadLedgerEntry;  // Fee per ledger entry read
     int64 feeWriteLedgerEntry; // Fee per ledger entry write
 
-    int64 feeRead1KB;  // Fee for reading 1KB    
+    int64 feeRead1KB;  // Fee for reading 1KB
     int64 feeWrite1KB; // Fee for writing 1KB
 
     // Bucket list fees grow slowly up to that size
@@ -78,6 +80,13 @@ struct ConfigSettingContractBandwidthV0
 
     // Fee for propagating 1KB of data
     int64 feePropagateData1KB;
+};
+
+// Records outstanding rent for the curr/snap bucket on a given level
+struct RentMetadata
+{
+    int64 outstandingCurrRent<>;
+    int64 outstandingSnapRent<>;
 };
 
 enum ContractCostType {
@@ -152,7 +161,8 @@ enum ConfigSettingID
     CONFIG_SETTING_CONTRACT_COST_PARAMS_CPU_INSTRUCTIONS = 6,
     CONFIG_SETTING_CONTRACT_COST_PARAMS_MEMORY_BYTES = 7,
     CONFIG_SETTING_CONTRACT_DATA_KEY_SIZE_BYTES = 8,
-    CONFIG_SETTING_CONTRACT_DATA_ENTRY_SIZE_BYTES = 9
+    CONFIG_SETTING_CONTRACT_DATA_ENTRY_SIZE_BYTES = 9,
+    CONFIG_SETTING_RENT_METADATA = 10
 };
 
 union ConfigSettingEntry switch (ConfigSettingID configSettingID)
@@ -177,5 +187,7 @@ case CONFIG_SETTING_CONTRACT_DATA_KEY_SIZE_BYTES:
     uint32 contractDataKeySizeBytes;
 case CONFIG_SETTING_CONTRACT_DATA_ENTRY_SIZE_BYTES:
     uint32 contractDataEntrySizeBytes;
+case CONFIG_SETTING_RENT_METADATA:
+    RentMetadata rentMetadata;
 };
 }
