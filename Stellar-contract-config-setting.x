@@ -83,10 +83,12 @@ struct ConfigSettingContractBandwidthV0
 };
 
 // Records outstanding rent for the curr/snap bucket on a given level
-struct RentMetadata
+struct RentMeta
 {
     int64 outstandingCurrRent<>;
     int64 outstandingSnapRent<>;
+    int64 currMergeSnapshot<>;
+    int64 snapMergeSnapshot<>;
 };
 
 enum ContractCostType {
@@ -188,6 +190,6 @@ case CONFIG_SETTING_CONTRACT_DATA_KEY_SIZE_BYTES:
 case CONFIG_SETTING_CONTRACT_DATA_ENTRY_SIZE_BYTES:
     uint32 contractDataEntrySizeBytes;
 case CONFIG_SETTING_RENT_METADATA:
-    RentMetadata rentMetadata;
+    RentMeta rentMeta;
 };
 }
