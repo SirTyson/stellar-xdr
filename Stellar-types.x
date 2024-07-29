@@ -111,9 +111,9 @@ struct ShortHashSeed
 
 enum BinaryFuseFilterType
 {
-    BINARY_FUSE_FILTER_8_BIT = 0,
-    BINARY_FUSE_FILTER_16_BIT = 1,
-    BINARY_FUSE_FILTER_32_BIT = 2
+    BINARY_FUSE_FILTER_BITS_8 = 0,
+    BINARY_FUSE_FILTER_BITS_16 = 1,
+    BINARY_FUSE_FILTER_BITS_32 = 2
 };
 
 struct SerializedBinaryFuseFilter
