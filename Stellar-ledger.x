@@ -185,6 +185,15 @@ enum HotArchiveBucketEntryType
     HOT_ARCHIVE_DELETED = 2     // Entry deleted (Note: must be persisted in archive)
 };
 
+enum ColdArchiveBucketEntryType
+{
+    COLD_ARCHIVE_METAENTRY     = -1,  // Bucket metadata, should come first.
+    COLD_ARCHIVE_ARCHIVED_LEAF = 0,   // Full LedgerEntry that was archived during the epoch
+    COLD_ARCHIVE_DELETED_LEAF  = 1,   // LedgerKey that was deleted during the epoch
+    COLD_ARCHIVE_BOUNDARY_LEAF = 2,   // Dummy leaf representing low/high bound
+    COLD_ARCHIVE_HASH          = 3    // Intermediary Merkle hash entry
+};
+
 struct BucketMetadata
 {
     // Indicates the protocol version used to create / merge this bucket.
@@ -223,6 +232,45 @@ case HOT_ARCHIVE_DELETED:
     LedgerKey key;
 case HOT_ARCHIVE_METAENTRY:
     BucketMetadata metaEntry;
+};
+
+struct ColdArchiveArchivedLeaf
+{
+    uint32 index;
+    LedgerEntry archivedEntry;
+};
+
+struct ColdArchiveDeletedLeaf
+{
+    uint32 index;
+    LedgerKey deletedKey;
+};
+
+struct ColdArchiveBoundaryLeaf
+{
+    uint32 index;
+    bool isLowerBound;
+};
+
+struct ColdArchiveHashEntry
+{
+    uint32 index;
+    uint32 level;
+    Hash hash;
+};
+
+union ColdArchiveBucketEntry switch (ColdArchiveBucketEntryType type)
+{
+case COLD_ARCHIVE_METAENTRY:
+    BucketMetadata metaEntry;
+case COLD_ARCHIVE_ARCHIVED_LEAF:
+    ColdArchiveArchivedLeaf archivedLeaf;
+case COLD_ARCHIVE_DELETED_LEAF:
+    ColdArchiveDeletedLeaf deletedLeaf;
+case COLD_ARCHIVE_BOUNDARY_LEAF:
+    ColdArchiveBoundaryLeaf boundaryLeaf;
+case COLD_ARCHIVE_HASH:
+    ColdArchiveHashEntry hashEntry;
 };
 
 enum TxSetComponentType
