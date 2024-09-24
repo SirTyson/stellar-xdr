@@ -289,10 +289,11 @@ case 0:
 
 enum LedgerEntryChangeType
 {
-    LEDGER_ENTRY_CREATED = 0, // entry was added to the ledger
-    LEDGER_ENTRY_UPDATED = 1, // entry was modified in the ledger
-    LEDGER_ENTRY_REMOVED = 2, // entry was removed from the ledger
-    LEDGER_ENTRY_STATE = 3    // value of the entry
+    LEDGER_ENTRY_CREATED  = 0, // entry was added to the ledger
+    LEDGER_ENTRY_UPDATED  = 1, // entry was modified in the ledger
+    LEDGER_ENTRY_REMOVED  = 2, // entry was removed from the ledger
+    LEDGER_ENTRY_STATE    = 3, // value of the entry
+    LEDGER_ENTRY_RESTORED = 4  // archived entry was restored in the ledger
 };
 
 union LedgerEntryChange switch (LedgerEntryChangeType type)
@@ -305,6 +306,8 @@ case LEDGER_ENTRY_REMOVED:
     LedgerKey removed;
 case LEDGER_ENTRY_STATE:
     LedgerEntry state;
+case LEDGER_ENTRY_RESTORED:
+    LedgerEntry restored;
 };
 
 typedef LedgerEntryChange LedgerEntryChanges<>;
@@ -497,12 +500,26 @@ struct LedgerCloseMetaExtV1
     int64 sorobanFeeWrite1KB;
 };
 
+struct LedgerCloseMetaExtV2
+{
+    int64 sorobanFeeWrite1KB;
+
+    uint32 currentArchivalEpoch;
+
+    // The last epoch currently stored by validators
+    // Any entry restored from an epoch older than this will
+    // require a proof.
+    uint32 lastArchivalEpochPersisted;
+};
+
 union LedgerCloseMetaExt switch (int v)
 {
 case 0:
     void;
 case 1:
     LedgerCloseMetaExtV1 v1;
+case 2:
+    LedgerCloseMetaExtV2 v2;
 };
 
 struct LedgerCloseMetaV1
