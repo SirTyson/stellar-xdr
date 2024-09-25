@@ -541,12 +541,16 @@ union SorobanAuthorizedFunction switch (SorobanAuthorizedFunctionType type)
 {
 case SOROBAN_AUTHORIZED_FUNCTION_TYPE_CONTRACT_FN:
     InvokeContractArgs contractFn;
-// This variant of auth payload for creating new contract instances is no
-// longer accepted after protocol 22.
+// This variant of auth payload for creating new contract instances
+// doesn't allow specifying the constructor arguments, creating contracts
+// with constructors that take arguments is only possible by authorizing
+// `SOROBAN_AUTHORIZED_FUNCTION_TYPE_CREATE_CONTRACT_V2_HOST_FN` 
+// (protocol 22+).
 case SOROBAN_AUTHORIZED_FUNCTION_TYPE_CREATE_CONTRACT_HOST_FN:
     CreateContractArgs createContractHostFn;
 // This variant of auth payload for creating new contract instances
-// is only accepted in and after protocol 22.
+// is only accepted in and after protocol 22. It allows authorizing the
+// contract constructor arguments.
 case SOROBAN_AUTHORIZED_FUNCTION_TYPE_CREATE_CONTRACT_V2_HOST_FN:
     CreateContractArgsV2 createContractV2HostFn;
 };
@@ -833,7 +837,7 @@ struct ArchivalProofNode
 
 typedef ArchivalProofNode ProofLevel<>;
 
-struct NonexistenceProofBody
+struct ExistenceProofBody
 {
     ColdArchiveBucketEntry entriesToProve<>;
 
@@ -842,7 +846,7 @@ struct NonexistenceProofBody
     ProofLevel proofLevels<>;
 };
 
-struct ExistenceProofBody
+struct NonexistenceProofBody
 {
     LedgerKey keysToProve<>;
 
@@ -862,9 +866,9 @@ struct ArchivalProof
 
     union switch (ArchivalProofType t)
     {
-    case EXISTENCE:
-        NonexistenceProofBody nonexistenceProof;
     case NONEXISTENCE:
+        NonexistenceProofBody nonexistenceProof;
+    case EXISTENCE:
         ExistenceProofBody existenceProof;
     } body;
 };
@@ -1872,7 +1876,8 @@ enum InvokeHostFunctionResultCode
     INVOKE_HOST_FUNCTION_TRAPPED = -2,
     INVOKE_HOST_FUNCTION_RESOURCE_LIMIT_EXCEEDED = -3,
     INVOKE_HOST_FUNCTION_ENTRY_ARCHIVED = -4,
-    INVOKE_HOST_FUNCTION_INSUFFICIENT_REFUNDABLE_FEE = -5
+    INVOKE_HOST_FUNCTION_INSUFFICIENT_REFUNDABLE_FEE = -5,
+    INVOKE_HOST_FUNCTION_INVALID_CREATION_PROOF = -6
 };
 
 union InvokeHostFunctionResult switch (InvokeHostFunctionResultCode code)
@@ -1916,7 +1921,8 @@ enum RestoreFootprintResultCode
     // codes considered as "failure" for the operation
     RESTORE_FOOTPRINT_MALFORMED = -1,
     RESTORE_FOOTPRINT_RESOURCE_LIMIT_EXCEEDED = -2,
-    RESTORE_FOOTPRINT_INSUFFICIENT_REFUNDABLE_FEE = -3
+    RESTORE_FOOTPRINT_INSUFFICIENT_REFUNDABLE_FEE = -3,
+    RESTORE_FOOTPRINT_INVALID_PROOF = -4
 };
 
 union RestoreFootprintResult switch (RestoreFootprintResultCode code)
