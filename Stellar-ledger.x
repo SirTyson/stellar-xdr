@@ -528,12 +528,11 @@ struct LedgerCloseMetaV1
     // systems calculating storage fees correctly.
     uint64 totalByteSizeOfBucketList;
 
-    // Temp keys that are being evicted at this ledger.
-    LedgerKey evictedTemporaryLedgerKeys<>;
+    // TTL and data/code keys that have been evicted at this ledger.
+    LedgerKey evictedKeys<>;
 
-    // Archived restorable ledger entries that are being
-    // evicted at this ledger.
-    LedgerEntry evictedPersistentLedgerEntries<>;
+    // Maintained for backwards compatibility, should never be populated.
+    LedgerEntry unused<>;
 };
 
 union LedgerCloseMeta switch (int v)

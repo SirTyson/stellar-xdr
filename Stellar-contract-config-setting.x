@@ -26,38 +26,48 @@ struct ConfigSettingContractComputeV0
 // Ledger access settings for contracts.
 struct ConfigSettingContractLedgerCostV0
 {
-    // Maximum number of ledger entry read operations per ledger
-    uint32 ledgerMaxReadLedgerEntries;
-    // Maximum number of bytes that can be read per ledger
-    uint32 ledgerMaxReadBytes;
+    // Maximum number of disk entry read operations per ledger
+    uint32 ledgerMaxDiskReadEntries;
+    // Maximum number of bytes of disk reads that can be performed per ledger
+    uint32 ledgerMaxDiskReadBytes;
     // Maximum number of ledger entry write operations per ledger
     uint32 ledgerMaxWriteLedgerEntries;
     // Maximum number of bytes that can be written per ledger
     uint32 ledgerMaxWriteBytes;
 
-    // Maximum number of ledger entry read operations per transaction
-    uint32 txMaxReadLedgerEntries;
-    // Maximum number of bytes that can be read per transaction
-    uint32 txMaxReadBytes;
+    // Maximum number of disk entry read operations per transaction
+    uint32 txMaxDiskReadEntries;
+    // Maximum number of bytes of disk reads that can be performed per transaction
+    uint32 txMaxDiskReadBytes;
     // Maximum number of ledger entry write operations per transaction
     uint32 txMaxWriteLedgerEntries;
     // Maximum number of bytes that can be written per transaction
     uint32 txMaxWriteBytes;
 
-    int64 feeReadLedgerEntry;  // Fee per ledger entry read
-    int64 feeWriteLedgerEntry; // Fee per ledger entry write
+    int64 feeDiskReadLedgerEntry;  // Fee per disk ledger entry read
+    int64 feeDiskRead1KB;          // Fee for reading 1KB disk
+    int64 feeWriteLedgerEntry;     // Fee per ledger entry write
 
-    int64 feeRead1KB;  // Fee for reading 1KB
 
     // The following parameters determine the write fee per 1KB.
-    // Write fee grows linearly until bucket list reaches this size
-    int64 bucketListTargetSizeBytes;
-    // Fee per 1KB write when the bucket list is empty
-    int64 writeFee1KBBucketListLow;
-    // Fee per 1KB write when the bucket list has reached `bucketListTargetSizeBytes` 
-    int64 writeFee1KBBucketListHigh;
-    // Write fee multiplier for any additional data past the first `bucketListTargetSizeBytes`
-    uint32 bucketListWriteFeeGrowthFactor;
+    // Write fee grows linearly until soroban state reaches this size
+    int64 sorobanStateTargetSizeBytes;
+    // Fee per 1KB write when the soroban state is empty
+    int64 writeFee1KBSorobanStateLow;
+    // Fee per 1KB write when the soroban state has reached `sorobanStateTargetSizeBytes`
+    int64 writeFee1KBSorobanStateHigh;
+    // Write fee multiplier for any additional data past the first `sorobanStateTargetSizeBytes`
+    uint32 sorobanStateWriteFeeGrowthFactor;
+};
+
+// Ledger access settings for contracts.
+struct ConfigSettingContractLedgerCostExtV0
+{
+    // Maximum number of in-memory entry read operations per ledger
+    uint32 ledgerMaxInMemoryReadEntries;
+
+    // Maximum number of in-memory ledger entry read operations per transaction
+    uint32 txMaxInMemoryReadEntries;
 };
 
 // Historical data (pushed to core archives) settings for contracts.
@@ -302,7 +312,8 @@ enum ConfigSettingID
     CONFIG_SETTING_STATE_ARCHIVAL = 10,
     CONFIG_SETTING_CONTRACT_EXECUTION_LANES = 11,
     CONFIG_SETTING_BUCKETLIST_SIZE_WINDOW = 12,
-    CONFIG_SETTING_EVICTION_ITERATOR = 13
+    CONFIG_SETTING_EVICTION_ITERATOR = 13,
+    CONFIG_SETTING_CONTRACT_LEDGER_COST_EXT_V0 = 14
 };
 
 union ConfigSettingEntry switch (ConfigSettingID configSettingID)
@@ -335,5 +346,7 @@ case CONFIG_SETTING_BUCKETLIST_SIZE_WINDOW:
     uint64 bucketListSizeWindow<>;
 case CONFIG_SETTING_EVICTION_ITERATOR:
     EvictionIterator evictionIterator;
+case CONFIG_SETTING_CONTRACT_LEDGER_COST_EXT_V0:
+    ConfigSettingContractLedgerCostExtV0 contractLedgerCostExt;
 };
 }

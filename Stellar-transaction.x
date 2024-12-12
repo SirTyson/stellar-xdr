@@ -882,16 +882,30 @@ struct SorobanResources
     // The maximum number of instructions this transaction can use
     uint32 instructions; 
 
-    // The maximum number of bytes this transaction can read from ledger
-    uint32 readBytes;
+    // The maximum number of bytes this transaction can read from disk backed entries
+    uint32 diskReadBytes;
     // The maximum number of bytes this transaction can write to ledger
     uint32 writeBytes;
+};
+
+struct SorobanResourcesExtV0
+{
+    // Vector of uint8_t indices representing what Soroban
+    // entries in the footprint are evicted, based on the
+    // order of keys provided in the readWrite footprint.
+    opaque<> evictedSorobanEntries;
 };
 
 // The transaction extension for Soroban.
 struct SorobanTransactionData
 {
-    ExtensionPoint ext;
+    union switch (int v)
+    {
+    case 0:
+        void;
+    case 1:
+        SorobanResourcesExtV0 resourceExt;
+    } ext;
     SorobanResources resources;
     // Amount of the transaction `fee` allocated to the Soroban resource fees.
     // The fraction of `resourceFee` corresponding to `resources` specified 
