@@ -100,6 +100,7 @@ enum MessageType
     GET_TX_SET = 6, // gets a particular txset by hash
     TX_SET = 7,
     GENERALIZED_TX_SET = 17,
+    COMPRESSED_GENERALIZED_TX_SET = 25,
 
     TRANSACTION = 8, // pass on a tx you have heard about
 
@@ -311,7 +312,8 @@ case TX_SET:
     TransactionSet txSet;
 case GENERALIZED_TX_SET:
     GeneralizedTransactionSet generalizedTxSet;
-
+case COMPRESSED_GENERALIZED_TX_SET:
+    opaque compressedBytes<>;
 case TRANSACTION:
     TransactionEnvelope transaction;
 
