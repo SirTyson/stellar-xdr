@@ -28,6 +28,7 @@ struct StellarValue
 {
     Hash txSetHash;      // transaction set to apply to previous ledger
     TimePoint closeTime; // network close time
+    TimePoint actualCloseTime; // origin node's unshifted local close time
 
     // upgrades to apply to the previous ledger (usually empty)
     // this is a vector of encoded 'LedgerUpgrade' so that nodes can drop
