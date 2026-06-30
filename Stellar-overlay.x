@@ -62,6 +62,10 @@ struct Hello
 // that value was used for other purposes).
 const AUTH_MSG_FLAG_FLOW_CONTROL_BYTES_REQUESTED = 200;
 
+// Set in the Auth `flags` bitmask (overlay version >= 42) when the sender has
+// the recipient's node key in its configured quorum set.
+const AUTH_MSG_FLAG_PEER_IN_QUORUM = 0x100;
+
 struct Auth
 {
     int flags;
